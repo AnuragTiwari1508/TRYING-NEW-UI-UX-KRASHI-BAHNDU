@@ -8,6 +8,8 @@ import 'screens/admin_dashboard.dart';
 import 'screens/complaint_screen.dart';
 import 'screens/farmer_dashboard.dart';
 import 'screens/login_screen.dart';
+import 'screens/crop_analyzer_screen.dart';
+import 'screens/community_feed_screen.dart';
 import 'theme.dart';
 
 void main() {
