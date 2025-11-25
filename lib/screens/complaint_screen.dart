@@ -188,93 +188,352 @@ class _ComplaintScreenState extends State<ComplaintScreen>
         ],
       ),
     ).animate().scale(duration: 300.ms, curve: Curves.easeOut);
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to submit complaint: $e')),
-          );
-        }
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Submit a Complaint'),
+        title: const Text('Submit Complaint'),
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.tertiary,
+              ],
+            ),
+          ),
+        ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title / Subject',
-                  border: OutlineInputBorder(),
+        child: FadeTransition(
+          opacity: _animationController,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Progress Indicator
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, 
+                           color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Please provide detailed information about your issue',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                ).animate().slideX(duration: 600.ms),
+                
+                const SizedBox(height: 24),
+                
+                // Title Field
+                TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title / Subject / शीर्षक',
+                    prefixIcon: Icon(Icons.title),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title.';
+                    }
+                    return null;
+                  },
+                ).animate().slideX(duration: 600.ms, delay: 100.ms),
+                
+                const SizedBox(height: 20),
+                
+                // Category Selection
+                Text(
+                  'Category / श्रेणी',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title.';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  border: OutlineInputBorder(),
-                ),
-                hint: const Text('Select a category'),
-                items: _categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedCategory = newValue;
-                  });
-                },
-                validator: (value) => value == null ? 'Please select a category' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 5,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please provide a description.';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _submitComplaint,
-                child: const Text('Submit Complaint'),
-              ),
-            ],
+                const SizedBox(height: 12),
+                
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: _categories.map((category) {
+                    final isSelected = _selectedCategory == category['name'];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = category['name'];
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected 
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: isSelected 
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey[300]!,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              category['icon'],
+                              size: 16,
+                              color: isSelected 
+                                  ? Colors.white
+                                  : category['color'],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              category['name'],
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black87,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ).animate().slideY(duration: 600.ms, delay: 200.ms),
+                
+                const SizedBox(height: 20),
+                
+                // Priority Selection
+                DropdownButtonFormField<String>(
+                  value: _selectedPriority,
+                  decoration: const InputDecoration(
+                    labelText: 'Priority Level / प्राथमिकता',
+                    prefixIcon: Icon(Icons.flag),
+                  ),
+                  hint: const Text('Select priority level'),
+                  items: _priorities.map((String priority) {
+                    return DropdownMenuItem<String>(
+                      value: priority,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 12,
+                            color: _getPriorityColor(priority),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(priority),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedPriority = newValue;
+                    });
+                  },
+                  validator: (value) => value == null ? 'Please select priority' : null,
+                ).animate().slideX(duration: 600.ms, delay: 300.ms),
+                
+                const SizedBox(height: 20),
+                
+                // Location Field
+                TextFormField(
+                  controller: _locationController,
+                  decoration: const InputDecoration(
+                    labelText: 'Location / Address / स्थान',
+                    prefixIcon: Icon(Icons.location_on),
+                    suffixIcon: Icon(Icons.my_location),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter location';
+                    }
+                    return null;
+                  },
+                ).animate().slideX(duration: 600.ms, delay: 400.ms),
+                
+                const SizedBox(height: 20),
+                
+                // Description Field
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Detailed Description / विस्तृत विवरण',
+                    alignLabelWithHint: true,
+                    prefixIcon: Icon(Icons.description),
+                  ),
+                  maxLines: 4,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please provide a description.';
+                    }
+                    return null;
+                  },
+                ).animate().slideX(duration: 600.ms, delay: 500.ms),
+                
+                const SizedBox(height: 24),
+                
+                // Image Upload Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Attach Photos / तस्वीरें संलग्न करें',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _pickImage,
+                              icon: const Icon(Icons.camera_alt),
+                              label: const Text('Take Photo'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _pickImageFromGallery,
+                              icon: const Icon(Icons.photo_library),
+                              label: const Text('From Gallery'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      if (_selectedImages.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'Selected Images (${_selectedImages.length})',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _selectedImages.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        _selectedImages[index],
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: GestureDetector(
+                                        onTap: () => _removeImage(index),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ).animate().slideY(duration: 600.ms, delay: 600.ms),
+                
+                const SizedBox(height: 32),
+                
+                // Submit Button
+                if (_isSubmitting)
+                  const Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Submitting complaint...'),
+                      ],
+                    ),
+                  )
+                else
+                  ElevatedButton.icon(
+                    onPressed: _submitComplaint,
+                    icon: const Icon(Icons.send),
+                    label: const Text('Submit Complaint / शिकायत दर्ज करें'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ).animate().scale(duration: 400.ms, delay: 700.ms),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'Critical':
+        return Colors.red;
+      case 'High':
+        return Colors.orange;
+      case 'Medium':
+        return Colors.yellow[700]!;
+      case 'Low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
 }
