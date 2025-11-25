@@ -40,6 +40,14 @@ final _router = GoRouter(
       path: '/complaint',
       builder: (context, state) => const ComplaintScreen(),
     ),
+    GoRoute(
+      path: '/analyzer',
+      builder: (context, state) => const CropAnalyzerScreen(),
+    ),
+    GoRoute(
+      path: '/feed',
+      builder: (context, state) => const CommunityFeedScreen(),
+    ),
   ],
 );
 
