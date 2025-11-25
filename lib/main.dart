@@ -1,9 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
 import 'screens/admin_dashboard.dart';
+import 'screens/complaint_screen.dart';
 import 'screens/farmer_dashboard.dart';
 import 'screens/login_screen.dart';
 import 'theme.dart';
@@ -31,6 +33,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/admin_dashboard',
       builder: (context, state) => const AdminDashboard(),
+    ),
+    GoRoute(
+      path: '/complaint',
+      builder: (context, state) => const ComplaintScreen(),
     ),
   ],
 );
