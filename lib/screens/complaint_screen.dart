@@ -187,7 +187,7 @@ class _ComplaintScreenState extends State<ComplaintScreen>
           ),
         ],
       ),
-    ).animate().scale(duration: 300.ms, curve: Curves.easeOut);
+    );
   }
 
   @override

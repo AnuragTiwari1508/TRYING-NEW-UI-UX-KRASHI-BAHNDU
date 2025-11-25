@@ -69,7 +69,7 @@ class AppTheme {
         textStyle: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 4,
       shadowColor: primaryGreen.withOpacity(0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -136,7 +136,7 @@ class AppTheme {
         textStyle: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 4,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

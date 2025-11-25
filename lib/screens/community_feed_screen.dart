@@ -308,7 +308,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             child: Row(
               children: [
                 _buildActionButton(
-                  Icons.thumb_up_outline,
+                  Icons.thumb_up,
                   '${post['likes']}',
                   Colors.blue,
                   () {},
@@ -446,6 +446,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           ),
         ],
       ),
-    ).animate().scale(duration: 300.ms);
+    );
   }
 }
